@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DMME - Authentication</title>
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <link rel="stylesheet" href="/css/auth.css">
+</head>
+
+<body class="<%= (currentUser && currentUser.theme) || 'light' %>">
+
+  <div class="auth-page">
+
+    <div class="auth-showcase">
+
+      <div class="logo">dmme.bio</div>
+
+      <div class="badge">🔒 100% Anonymous Messaging</div>
+
+      <h1>Hear what people <span>really think.</span></h1>
+
+      <p>Create your personal DMME link, share it anywhere, and start receiving anonymous messages from friends, followers, and your community.</p>
+
+      
+          <div class="floating-messages">
+
+        <div class="message-card">
+          You're honestly one of the coolest people I know.
+          <small>Anonymous • 2m ago</small>
+        </div>
+
+        <div class="message-card">
+          I wish you posted more often.
+          <small>Anonymous • 5m ago</small>
+        </div>
+
+        <div class="message-card">
+          Your energy is unmatched 🔥
+          <small>Anonymous • 11m ago</small>
+        </div>
+
+      </div>
+    </div>
+    
+
+    <div class="auth-container">
+
+      <div class="auth-card">
+
+        <div class="tabs">
+          <button id="loginTab" class="active">Login</button>
+          <button id="signupTab">Signup</button>
+        </div>
+
+        <!-- LOGIN -->
+        <div id="loginForm" class="form active">
+
+          <h2>Welcome Back</h2>
+
+          <p class="form-sub">Login to view your inbox.</p>
+
+          <form method="post" action="/auth/login">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div class="input-group">
+              <label>Username or Email</label>
+              <input name="identifier" type="text" placeholder="Enter username or email" required>
+            </div>
+
+            <div class="input-group">
+              <label>Password</label>
+              <input name="password" type="password" placeholder="Enter password" required>
+            </div>
+
+            <button type="submit" class="btn primary-btn">Login</button>
+
+            <div class="divider">OR</div>
+
+            <a class="btn google-btn" href="/auth/google">Continue with Google</a>
+
+          </form>
+
+          <div class="switch">No account? <a href="#" id="showSignup">Sign Up</a></div>
+
+        </div>
+
+        <!-- SIGNUP -->
+        <div id="signupForm" class="form">
+
+          <h2>Create Account</h2>
+
+          <p class="form-sub">Start receiving anonymous messages.</p>
+
+          <form method="post" action="/auth/signup">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div class="input-group">
+              <label>Username</label>
+              <input name="username" type="text" placeholder="Choose username" required>
+            </div>
+
+            <div class="input-group">
+              <label>Email</label>
+              <input name="email" type="email" placeholder="Enter email" required>
+            </div>
+
+            <div class="input-group">
+              <label>Password</label>
+              <input id="password" name="password" type="password" placeholder="Create password" required>
+
+              <div class="password-checks">
+                <div>
+                  <div id="length">✓ 8+ characters</div>
+                  <div id="upper">✓ Uppercase</div>
+                </div>
+                <div>
+                  <div id="lower">✓ Lowercase</div>
+                  <div id="number">✓ Number</div>
+                </div>
+                <div id="special">✓ Special Char.</div>
+              </div>
+
+            </div>
+
+            <div class="input-group">
+              <label>Confirm Password</label>
+              <input name="confirmPassword" type="password" placeholder="Confirm password" required>
+            </div>
+
+            <button type="submit" class="btn primary-btn">Create Account</button>
+
+            <div class="divider">OR</div>
+
+            <a class="btn google-btn" href="/auth/google">Continue with Google</a>
+
+          </form>
+
+          <div class="switch">Already have an account? <a href="#" id="showLogin">Login</a></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="/js/auth.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <title><%= title || 'NPL' %></title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script>
+    window.currentUserId = '<%= currentUser ? currentUser._id : '' %>';
+  </script>
+</head>
+<body class="<%= (currentUser && currentUser.theme==='dark') || (typeof window !== 'undefined' && localStorage.getItem('theme')==='dark') ? 'dark' : '' %>">
+  <div class="container">
+  <header class="header">
+    <div class="brand">
+      <div class="logo">NPL</div>
+      <div>
+        <strong>NPL</strong>
+        <div class="small">Anonymous messaging</div>
+      </div>
+    </div>
+    <div>
+      <% if (currentUser) { %>
+        <a class="btn" href="/dashboard">Dashboard</a>
+        <a class="btn" href="/dashboard/inbox">Inbox</a>
+        <a class="btn" href="/dashboard/settings">Edit Profile</a>
+        <form method="POST" action="/logout" class="inline-form">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button class="btn secondary">Logout</button>
+        </form>
+      <% } else { %>
+        <a class="btn" href="/login">Login</a>
+        <a class="btn" href="/signup">Sign up</a>
+      <% } %>
+    </div>
+  </header>
+  <main class="mt-20">

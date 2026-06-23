@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Message</title>
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <link rel="stylesheet" href="/css/inbox.css">
+</head>
+
+<body class="<%= (currentUser && currentUser.theme) || 'light' %>">
+  <header>
+    <button id="btnBack" class="icon" aria-label="Go back">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor" />
+      </svg>
+    </button>
+
+    <h3>Message</h3>
+    <div class="actions"></div>
+  </header>
+
+  <main>
+    <div class="top">
+      <nav id="platformTabs">
+
+        <div class="tab-indicator"></div>
+
+        <span data-platform="instagram" class="active" aria-label="Instagram">
+          <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="1.2" />
+            <circle cx="12" cy="11" r="3.2" fill="currentColor" />
+            <circle cx="17.2" cy="6.8" r="0.9" fill="currentColor" />
+          </svg>
+        </span>
+        <span data-platform="snapchat" aria-label="Snapchat">
+          <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <!-- Snapchat ghost (simplified) -->
+            <path d="M12 2C8.13 2 5 5.13 5 9v4.5c0 1.38.9 2.63 2.25 3.05.66.2 1.28.05 1.75-.3.7-.5 1.6-.6 2.4-.2.86.44 1.9.44 2.76 0 .8-.38 1.7-.3 2.4.2.47.35 1.09.5 1.75.3C18.1 16.13 19 14.88 19 13.5V9c0-3.87-3.13-7-7-7z" fill="currentColor" />
+            <circle cx="9" cy="9" r="0.9" fill="currentColor" />
+            <circle cx="15" cy="9" r="0.9" fill="currentColor" />
+          </svg>
+        </span>
+        <span data-platform="tiktok" aria-label="TikTok">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" fill="currentColor" />
+          </svg>
+        </span>
+        <span data-platform="whatsapp" aria-label="WhatsApp">
+          <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <!-- WhatsApp phone-in-chat bubble -->
+            <path d="M20.5 3.5A10.9 10.9 0 0 0 3.5 20.5L2 22l1.5-1.5A10.9 10.9 0 1 0 20.5 3.5z" fill="currentColor" />
+            <path d="M16.2 15.8c-.4.8-1.2 1.4-2 1.6-.5.1-1 .1-1.5 0-.5-.1-1-.4-1.5-.8-.5-.4-.9-.9-1-1.5-.1-.6.1-1.2.5-1.6.3-.3.7-.5 1.1-.5.3 0 .6 0 .9.1.3.1.5.2.8.3.2.1.5.2.7.2.4 0 .7-.1 1-.3.2-.1.4-.3.5-.6V10h1.5c0 .8-.2 1.6-.7 2.3-.5.7-.8.8-.9 1.1.1.3.4.6.7.8.3.2.6.4.8.6.3.2.5.4.4.6z" fill="white" />
+          </svg>
+        </span>
+        <span data-platform="facebook" aria-label="Facebook">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M15 3h3V0h-3a5 5 0 0 0-5 5v2H7v4h3v8h4v-8h3l1-4h-4V5a1 1 0 0 1 1-1z" fill="currentColor" />
+          </svg>
+        </span>
+
+      </nav>
+
+      <div class="card">
+        <div class="inner_card">
+          <p id="message"><%= message.text %></p>
+          <span id="msgDate"><%= new Date(message.createdAt).toLocaleString() %></span>
+        </div>
+      </div>
+
+      <p id="sourceText"></p>
+
+      <div class="tools">
+        <button id="btnChangeColor" class="icon" aria-label="Change card style" title="Change style (Shift+click to reset, right-click to undo)">
+          <span aria-hidden="true" class="tool-emoji">🎨</span>
+        </button>
+        <button id="btnScreenshot" class="icon" aria-label="Download message image" title="Download message image">
+          <!-- camera (improved) -->
+          <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4 7h3l2-3h6l2 3h3v12H4V7zm8 3a4 4 0 100 8 4 4 0 000-8z" fill="currentColor" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <button id="replyBtn" class="primary" title="Reply to this message">
+      <!-- reply/share icon -->
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M10 9V5l-7 7 7 7v-4.1c5.05 0 8.5 1.64 11 5.1-1-5-4-11-11-11z" fill="currentColor" />
+      </svg>
+      <span>Reply</span>
+    </button>
+  </main>
+
+  <script>
+    // expose server-side message to client JS safely (server-side guarded)
+    window.message = <%- (function(){ try { return JSON.stringify(message || {}); } catch(e) { return '{}'; } })() %>;
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="/js/inbox.js"></script>
+  <script>
+    window.currentUserId = '<%= currentUser ? currentUser._id : '' %>';
+  </script>
+</body>
+
+</html>

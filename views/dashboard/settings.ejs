@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings</title>
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/home.css">
+</head>
+<body class="<%= (currentUser && currentUser.theme) || 'light' %>">
+  <header>
+    <h3>Settings</h3>
+  </header>
+  <main class="mt-20">
+    <section class="center-section">
+      <div class="card max-w-700">
+        <form method="post" action="/dashboard/profile/update" enctype="multipart/form-data">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="pv-24">
+            <label>Username</label>
+            <input name="username" value="<%= user.username %>">
+            <label>Email</label>
+            <input name="email" value="<%= user.email %>">
+            <label>Profile photo</label>
+            <input type="file" name="profilePhoto" accept="image/*">
+            <label><input type="checkbox" name="notificationsEnabled" <%= user.notificationsEnabled ? 'checked' : '' %>> Email notifications</label>
+            <div class="flex-row-end">
+              <button type="submit" class="primary">Save</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

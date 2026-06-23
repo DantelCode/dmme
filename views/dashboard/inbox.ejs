@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DMME Inbox</title>
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <link rel="stylesheet" href="/css/inbox.css">
+</head>
+
+<body class="<%= (currentUser && currentUser.theme) || 'light' %>">
+  <header>
+    <a href="/" id="btnBack" class="icon" aria-label="Go back">
+      <!-- back arrow -->
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/>
+      </svg>
+    </a>
+
+    <h3>Inbox</h3>
+
+    <div class="actions">
+      <button id="btnRefresh" class="icon" aria-label="Refresh inbox" title="Refresh inbox">
+        <!-- improved refresh (circular arrow) -->
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 6V3L8 7l4 4V8a4 4 0 1 1-4 4H6a6 6 0 1 0 6-6z" fill="currentColor"/>
+        </svg>
+      </button>
+      <button id="btnDeleteToggle" class="icon deleteBtn" aria-label="Delete messages" title="Delete messages">
+        <!-- trash -->
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <ul>
+    <span class="loader"></span>
+    <% if (messages && messages.length) { %>
+      <% messages.forEach(function(msg){ %>
+        <li data-id="<%= msg._id %>" class="msg-item">
+          <div class="msg_icon" aria-hidden="true">
+            <!-- mail icon -->
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="txt_container">
+            <span><%= (msg.text && msg.text.length>120) ? msg.text.substring(0,117)+'...' : msg.text %></span>
+            <small><%= new Date(msg.createdAt).toLocaleString() %></small>
+          </div>
+          <label class="checkbox" aria-label="Select message">
+            <input type="checkbox" />
+            <span class="checkmark" aria-hidden="true"></span>
+          </label>
+        </li>
+      <% }); %>
+    <% } else { %>
+      <li class="empty">No messages yet</li>
+    <% } %>
+  </ul>
+
+  <script src="/js/inbox.js"></script>
+  <script>
+    window.currentUserId = '<%= currentUser ? currentUser._id : '' %>';
+  </script>
+</body>
+
+</html>

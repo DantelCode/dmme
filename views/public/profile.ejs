@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= user.username %> • DMME</title>
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/home.css">
+</head>
+<body class="<%= (currentUser && currentUser.theme) || 'light' %>">
+  <header>
+    <h3><%= user.username %></h3>
+  </header>
+
+  <main style="padding-top:72px;">
+    <section style="display:flex;justify-content:center;padding:24px;">
+      <div class="card mode-preview" style="max-width:700px;">
+        <% if (user.selectedMode === 'default') { %>
+          <div style="display:flex;gap:16px;align-items:center;padding:24px;">
+            <div style="width:120px;height:120px;border-radius:50%;overflow:hidden;">
+              <img src="<%= user.profilePhoto || '/images/default_avatar.png' %>" alt="avatar" style="width:100%;height:100%;object-fit:cover;" />
+            </div>
+            <div>
+              <h4>@<%= user.username %></h4>
+              <p><%= user.bio || '' %></p>
+            </div>
+          </div>
+          <div style="padding:0 24px 24px 24px;">
+            <div class="mode-subtext" style="margin-bottom:12px;color:var(--muted,#666);">
+              <%= user.selectedModeText || 'Send me an anonymous' %>
+            </div>
+            <form method="post" action="/api/messages/send/<%= user.username %>">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <textarea name="text" rows="4" style="width:100%;border-radius:8px;padding:12px;" placeholder="Send an anonymous message" required></textarea>
+              <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px;">
+                <button type="submit" class="primary">Send</button>
+              </div>
+            </form>
+          </div>
+        <% } else { %>
+          <div style="padding:24px;">
+            <% if (user.selectedTagClass) { %>
+              <span class="<%= user.selectedTagClass %>"><%= user.selectedModeText || user.selectedMode %></span>
+            <% } else { %>
+              <h4>@<%= user.username %></h4>
+            <% } %>
+            <p style="margin-top:12px; font-size:1.05rem;"><%= user.selectedModeText || (user.selectedMode === 'confessions' ? 'Deep anonymous thoughts' : 'Say anything in 3 words') %></p>
+          </div>
+          <div style="padding:0 24px 24px 24px;">
+            <form method="post" action="/api/messages/send/<%= user.username %>">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <textarea name="text" rows="4" style="width:100%;border-radius:8px;padding:12px;" placeholder="Send an anonymous message" required></textarea>
+              <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px;">
+                <button type="submit" class="primary">Send</button>
+              </div>
+            </form>
+          </div>
+        <% } %>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

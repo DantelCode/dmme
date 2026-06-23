@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard</title>
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <link rel="stylesheet" href="/css/home.css">
+</head>
+
+<body class="<%= (currentUser && currentUser.theme) || 'light' %>">
+
+  <header>
+
+    <div id="profileToggle" class="profile">
+      <div class="userPic">
+        <img src="/images/placeholder.png" alt="profile" />
+      </div>
+      <span id="username"><%= user.username %></span>
+    </div>
+
+    <div class="actions">
+
+      <div id="themeToggle" class="icon" role="button" aria-label="Toggle theme" tabindex="0">
+        <!-- Moon (dark) and Sun (light) icons; visibility controlled via JS -->
+        <svg id="icon-moon" class="theme-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor" />
+        </svg>
+        <svg id="icon-sun" class="theme-icon hidden" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" fill="currentColor" />
+          <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M12 2v2" />
+            <path d="M12 20v2" />
+            <path d="M4.93 4.93l1.41 1.41" />
+            <path d="M17.66 17.66l1.41 1.41" />
+            <path d="M2 12h2" />
+            <path d="M20 12h2" />
+            <path d="M4.93 19.07l1.41-1.41" />
+            <path d="M17.66 6.34l1.41-1.41" />
+          </g>
+        </svg>
+      </div>
+
+      <a href="/dashboard/inbox" class="icon" aria-label="Open inbox">
+        <svg id="icon-mail" class="mail-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 8.5V18a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M21 6H3v2.5l9 6 9-6V6z" fill="currentColor"/>
+        </svg>
+        <span id="unread" class="<%= (stats && stats.unread > 0) ? '' : 'hidden' %>"><%= stats.unread %></span>
+      </a>
+
+    </div>
+
+  </header>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h3>Menu</h3>
+      
+      <button id="sidebarClose" aria-label="Close sidebar" class="icon close-btn">
+        <svg class="close-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M15 6 L9 12 L15 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+        </svg>
+      </button>
+    </div>
+    <a href="/dashboard/settings">Profile
+      <svg class="chev-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M9 6 L15 12 L9 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      </svg>
+    </a>
+    <div class="sidebar-row">
+      <label for="notifToggle">Notifications</label>
+      <button id="notifToggle" class="switch" role="switch" aria-checked="<%= user.notificationsEnabled ? 'true' : 'false' %>" aria-label="Notifications switch">
+        <span class="slider"></span>
+      </button>
+    </div>
+    <div class="sidebar-row">
+      <label for="pauseToggle">Pause my link</label>
+      <button id="pauseToggle" class="switch" role="switch" aria-checked="<%= user.paused ? 'true' : 'false' %>" aria-label="Pause link switch">
+        <span class="slider"></span>
+      </button>
+    </div>
+    <a href="/terms_privacy">Terms and Privacy Policy
+      <svg class="chev-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M9 6 L15 12 L9 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      </svg>
+    </a>
+    <form id="deleteForm" method="POST" action="/dashboard/delete">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button id="btnDeleteAccount" type="submit" class="btn secondary">Delete Account</button>
+    </form>
+    <form id="logoutFormSidebar" method="POST" action="/auth/logout">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button type="submit" class="btn">Logout</button>
+    </form>
+  </div>
+
+
+  <main>
+    <!-- Slider / Cards -->
+  <section class="slider">
+    <div class="slides" id="slides">
+
+      <div class="slide">
+        <div class="card">
+          <div class="userPic">
+            <img src="/images/placeholder.png" alt="userPic">
+          </div>
+          <input id="customInput" value="<%= (user.selectedMode === 'default' && user.selectedModeText) ? user.selectedModeText : 'Send me an anonymous' %>" placeholder="Type message here..." />
+
+            <div class="actions-row">
+              <button id="btnClear" class="secondary">Clear</button>
+              <button id="btnRandom" class="primary">Random</button>
+            </div>
+        </div>
+      </div>
+
+      <div class="slide">
+        <div class="card no-p">
+          <span class="tag-cyan-purple">Confessions</span>
+          <p>Deep anonymous thoughts</p>
+        </div>
+      </div>
+
+      <div class="slide">
+        <div class="card no-p">
+          <span class="tag-pink-purple">3 Words</span>
+          <p>Say anything in 3 words</p>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+    <div class="dots">
+      <span class="dot active"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+
+  <!-- STEPS -->
+  <section class="steps">
+
+    <div class="step">
+      <h4>Step 1: Copy Your Link</h4>
+      <a href="/@<%= user.username %>" id="link" target="_blank">dmme.bio/@<%= user.username %></a>
+      <button id="btnCopyLink" class="primary">🔗 copy link</button>
+    </div>
+
+    <div class="step">
+      <h4>Step 2: Share link on your story</h4>
+      <button id="btnOpenModal" class="primary">Share!</button>
+    </div>
+
+  </section>
+  </main>
+
+  <!-- MODAL -->
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <h3>Share To</h3>
+
+      <button class="secondary">WhatsApp</button>
+      <button class="secondary">Instagram</button>
+      <button class="secondary">Snapchat</button>
+      <button class="secondary">TikTok</button>
+
+      <button id="btnCloseModal" class="primary">Close</button>
+    </div>
+  </div>
+
+  </main>
+
+  <script src="/js/home.js"></script>
+  <script>
+    window.initialModeIndex = <%= user.selectedMode === 'confessions' ? 1 : (user.selectedMode === '3words' ? 2 : 0) %>;
+  </script>
+</body>
+</html>
