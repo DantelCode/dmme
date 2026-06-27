@@ -14,16 +14,16 @@ const transporter = nodemailer.createTransport({
 });
 
 module.exports = {
-  getLogin: (req, res) => res.render('auth/login', { title: 'Login' }),
-  getSignup: (req, res) => res.render('auth/login', { title: 'Sign Up' }),
+  getLogin: (req, res) => res.render('auth/authorize', { title: 'dmme • Authentication' }),
+  getSignup: (req, res) => res.render('auth/authorize', { title: 'dmme • Authentication' }),
 
   postSignup: async (req, res) => {
     try {
       const { username, email, password, confirmPassword } = req.body;
-      if (!username || !email || !password) return res.status(400).render('auth/signup', { error: 'Missing fields' });
-      if (password !== confirmPassword) return res.status(400).render('auth/signup', { error: 'Passwords do not match' });
+      if (!username || !email || !password) return res.status(400).render('auth/authorize', { error: 'Missing fields' });
+      if (password !== confirmPassword) return res.status(400).render('auth/authorize', { error: 'Passwords do not match' });
       let user = await User.findOne({ $or: [{ email }, { username }] });
-      if (user) return res.status(400).render('auth/signup', { error: 'User already exists' });
+      if (user) return res.status(400).render('auth/authorize', { error: 'User already exists' });
       user = new User({ username, email, password, editsLeft: 1 });
       await user.save();
       // issue JWT
@@ -38,7 +38,7 @@ module.exports = {
       });
     } catch (err) {
       console.error(err);
-      res.status(500).render('auth/signup', { error: 'Server error' });
+      res.status(500).render('auth/authorize', { error: 'Server error' });
     }
   },
 
@@ -47,9 +47,9 @@ module.exports = {
     const { identifier, password } = req.body; // identifier can be email or username
     try {
       const user = await User.findOne({ $or: [{ email: identifier }, { username: identifier }] });
-      if (!user) return res.status(400).render('auth/login', { error: 'Invalid credentials' });
+      if (!user) return res.status(400).render('auth/authorize', { error: 'Invalid credentials' });
       const valid = await user.comparePassword(password);
-      if (!valid) return res.status(400).render('auth/login', { error: 'Invalid credentials' });
+      if (!valid) return res.status(400).render('auth/authorize', { error: 'Invalid credentials' });
       req.login(user, (err) => {
         if (err) return next(err);
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'jwt_secret', { expiresIn: '7d' });
@@ -58,7 +58,7 @@ module.exports = {
       });
     } catch (err) {
       console.error(err);
-      res.status(500).render('auth/login', { error: 'Server error' });
+      res.status(500).render('auth/authorize', { error: 'Server error' });
     }
   },
 

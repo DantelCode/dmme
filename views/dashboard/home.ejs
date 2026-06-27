@@ -1,32 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard</title>
+  <title>dmme • Dashboard</title>
   <meta name="csrf-token" content="<%= csrfToken %>">
   <link rel="stylesheet" href="/css/home.css">
 </head>
 
-<body class="<%= (currentUser && currentUser.theme) || 'light' %>">
+<body class="<%= (currentUser && currentUser.theme) || 'dark' %>">
 
   <header>
 
-    <div id="profileToggle" class="profile">
+    <button id="profileToggle" class="profile" popovertarget="popover">
       <div class="userPic">
-        <img src="/images/placeholder.png" alt="profile" />
+        <img src="<%= user.profilePhoto || '/images/placeholder.png' %>" alt="profile" />
       </div>
-      <span id="username"><%= user.username %></span>
-    </div>
+      <span id="username">
+        <%= user.username %>
+      </span>
+    </button>
 
     <div class="actions">
 
       <div id="themeToggle" class="icon" role="button" aria-label="Toggle theme" tabindex="0">
         <!-- Moon (dark) and Sun (light) icons; visibility controlled via JS -->
-        <svg id="icon-moon" class="theme-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <svg id="icon-moon" class="theme-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true">
           <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor" />
         </svg>
-        <svg id="icon-sun" class="theme-icon hidden" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <svg id="icon-sun" class="theme-icon hidden" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true">
           <circle cx="12" cy="12" r="4" fill="currentColor" />
           <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
             <path d="M12 2v2" />
@@ -42,48 +47,47 @@
       </div>
 
       <a href="/dashboard/inbox" class="icon" aria-label="Open inbox">
-        <svg id="icon-mail" class="mail-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M3 8.5V18a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M21 6H3v2.5l9 6 9-6V6z" fill="currentColor"/>
+        <svg id="icon-mail" class="mail-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true">
+          <path d="M3 8.5V18a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M21 6H3v2.5l9 6 9-6V6z" fill="currentColor" />
         </svg>
-        <span id="unread" class="<%= (stats && stats.unread > 0) ? '' : 'hidden' %>"><%= stats.unread %></span>
+        <span id="unread" class="<%= (stats && stats.unread > 0) ? '' : 'hidden' %>">
+          <%= stats.unread %>
+        </span>
       </a>
 
     </div>
 
   </header>
 
-  <!-- SIDEBAR -->
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <h3>Menu</h3>
-      
-      <button id="sidebarClose" aria-label="Close sidebar" class="icon close-btn">
-        <svg class="close-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M15 6 L9 12 L15 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-        </svg>
-      </button>
-    </div>
-    <a href="/dashboard/settings">Profile
+  <!-- POPOVER (outside header so it stays fixed on scroll) -->
+  <div class="sidebar" id="popover" popover>
+    <a href="/dashboard/profile">Profile
       <svg class="chev-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M9 6 L15 12 L9 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+        <path d="M9 6 L15 12 L9 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+          stroke-linejoin="round" fill="none" />
       </svg>
     </a>
     <div class="sidebar-row">
       <label for="notifToggle">Notifications</label>
-      <button id="notifToggle" class="switch" role="switch" aria-checked="<%= user.notificationsEnabled ? 'true' : 'false' %>" aria-label="Notifications switch">
+      <button id="notifToggle" class="switch" role="switch"
+        aria-checked="<%= user.notificationsEnabled ? 'true' : 'false' %>" aria-label="Notifications switch">
         <span class="slider"></span>
       </button>
     </div>
     <div class="sidebar-row">
       <label for="pauseToggle">Pause my link</label>
-      <button id="pauseToggle" class="switch" role="switch" aria-checked="<%= user.paused ? 'true' : 'false' %>" aria-label="Pause link switch">
+      <button id="pauseToggle" class="switch" role="switch" aria-checked="<%= user.paused ? 'true' : 'false' %>"
+        aria-label="Pause link switch">
         <span class="slider"></span>
       </button>
     </div>
     <a href="/terms_privacy">Terms and Privacy Policy
       <svg class="chev-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M9 6 L15 12 L9 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+        <path d="M9 6 L15 12 L9 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+          stroke-linejoin="round" fill="none" />
       </svg>
     </a>
     <form id="deleteForm" method="POST" action="/dashboard/delete">
@@ -96,65 +100,113 @@
     </form>
   </div>
 
-
   <main>
     <!-- Slider / Cards -->
-  <section class="slider">
-    <div class="slides" id="slides">
+    <section class="slider">
+      <div class="slides" id="slides">
 
-      <div class="slide">
-        <div class="card">
-          <div class="userPic">
-            <img src="/images/placeholder.png" alt="userPic">
-          </div>
-          <input id="customInput" value="<%= (user.selectedMode === 'default' && user.selectedModeText) ? user.selectedModeText : 'Send me an anonymous' %>" placeholder="Type message here..." />
+        <div class="slide">
+          <div class="card">
+            <div class="userPic">
+              <img src="<%= user.profilePhoto || '/images/placeholder.png' %>" alt="userPic">
+            </div>
+            <textarea id="customInput" placeholder="Type message here..."
+              maxlength="50">Send me anonymous messages!</textarea>
 
             <div class="actions-row">
               <button id="btnClear" class="secondary">Clear</button>
               <button id="btnRandom" class="primary">Random</button>
             </div>
+          </div>
         </div>
+
+        <div class="slide">
+          <div class="card no-p">
+            <span class="tag-cyan-purple">Confessions</span>
+            <p>Send me anonymous confessions</p>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="card no-p">
+            <span class="tag-pink-purple">3 Words</span>
+            <p>describe me in 3 words, anonymously</p>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="card no-p">
+            <span class="tag-pink-purple">NEVER HAVE I EVER</span>
+            <p>send me a never have I ever, anonymously</p>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="card no-p">
+            <span class="tag-pink-purple">tbh</span>
+            <p>If you could change anything about me, what would it be?</p>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="card no-p">
+            <span class="tag-pink-purple">SHIP ME</span>
+            <p>Who would you ship me with?</p>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="card no-p">
+            <span class="tag-pink-purple">YOUR CRUSH</span>
+            <p>Tell me who your crush is, anonymously 🤫</p>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="card no-p">
+            <span class="tag-pink-purple">CANCELLED</span>
+            <p>Share an opinion that'll get you cancelled</p>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="card no-p">
+            <span class="tag-pink-purple">DEALBREAKER</span>
+            <p>They're a 10 but...</p>
+          </div>
+        </div>
+
       </div>
 
-      <div class="slide">
-        <div class="card no-p">
-          <span class="tag-cyan-purple">Confessions</span>
-          <p>Deep anonymous thoughts</p>
-        </div>
-      </div>
-
-      <div class="slide">
-        <div class="card no-p">
-          <span class="tag-pink-purple">3 Words</span>
-          <p>Say anything in 3 words</p>
-        </div>
-      </div>
-
-    </div>
-
-  </section>
+    </section>
 
     <div class="dots">
       <span class="dot active"></span>
       <span class="dot"></span>
       <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
     </div>
 
-  <!-- STEPS -->
-  <section class="steps">
+    <!-- STEPS -->
+    <section class="steps">
 
-    <div class="step">
-      <h4>Step 1: Copy Your Link</h4>
-      <a href="/@<%= user.username %>" id="link" target="_blank">dmme.bio/@<%= user.username %></a>
-      <button id="btnCopyLink" class="primary">🔗 copy link</button>
-    </div>
+      <div class="step">
+        <h4>Step 1: Copy Your Link</h4>
+        <a href="/@<%= user.username %>" id="link" target="_blank">dmme.bio/@<%= user.username %></a>
+        <button id="btnCopyLink" class="primary">🔗 copy link</button>
+      </div>
 
-    <div class="step">
-      <h4>Step 2: Share link on your story</h4>
-      <button id="btnOpenModal" class="primary">Share!</button>
-    </div>
+      <div class="step">
+        <h4>Step 2: Share link on your story</h4>
+        <button id="btnOpenModal" class="primary">Share!</button>
+      </div>
 
-  </section>
+    </section>
   </main>
 
   <!-- MODAL -->
@@ -162,20 +214,59 @@
     <div class="modal-box">
       <h3>Share To</h3>
 
-      <button class="secondary">WhatsApp</button>
-      <button class="secondary">Instagram</button>
-      <button class="secondary">Snapchat</button>
-      <button class="secondary">TikTok</button>
+      <button type="button" class="secondary share-btn" data-share="whatsapp">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#25D366"
+            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 7.012 2.898a9.825 9.825 0 012.893 7.038c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+        </svg>
+        WhatsApp
+      </button>
+      <button type="button" class="secondary share-btn" data-share="instagram">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <defs>
+            <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#FD5949" />
+              <stop offset="50%" stop-color="#D6249F" />
+              <stop offset="100%" stop-color="#285AEB" />
+            </linearGradient>
+          </defs>
+          <path fill="url(#ig-grad)"
+            d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+        </svg>
+        Instagram
+      </button>
+      <button type="button" class="secondary share-btn" data-share="facebook">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#1877F2"
+            d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+        </svg>
+        Facebook
+      </button>
+      <button type="button" class="secondary share-btn" data-share="snapchat">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#FFFC00"
+            d="M12.206 3.787c-.766-.112-1.566-.17-2.438-.17-.872 0-1.672.058-2.438.17-.803.118-1.568.29-2.276.518-.72.233-1.373.518-1.948.85-.577.332-1.05.722-1.395 1.17-.345.448-.518.95-.518 1.503 0 .553.173 1.055.518 1.503.345.448.818.838 1.395 1.17.577.332 1.23.617 1.948.85.708.228 1.473.4 2.276.518.766.112 1.566.17 2.438.17.872 0 1.672-.058 2.438-.17.803-.118 1.568-.29 2.276-.518.72-.233 1.373-.518 1.948-.85.577-.332 1.05-.722 1.395-1.17.345-.448.518-.95.518-1.503 0-.553-.173-1.055-.518-1.503-.345-.448-.818-.838-1.395-1.17-.577-.332-1.23-.617-1.948-.85-.708-.228-1.473-.4-2.276-.518z" />
+          <path fill="#000"
+            d="M12.206 8.5c-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5-1.12-2.5-2.5-2.5zm-4.5 5.5c.3.6.7 1.1 1.2 1.5.6.4 1.2.7 1.9.9.7.2 1.4.3 2.2.3.8 0 1.5-.1 2.2-.3.7-.2 1.3-.5 1.9-.9.5-.4.9-.9 1.2-1.5.1-.2 0-.5-.2-.6-.2-.1-.5 0-.6.2-.3.3-.7.5-1.1.7-.4.2-.9.3-1.4.3-.5 0-1-.1-1.4-.3-.4-.2-.8-.4-1.1-.7-.2-.2-.5-.3-.6-.2-.2.1-.3.4-.2.6z" />
+        </svg>
+        Snapchat
+      </button>
+      <button type="button" class="secondary share-btn" data-share="tiktok">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#FE2C55"
+            d="M19.321 5.562a5.124 5.124 0 01-.443-.258 6.228 6.228 0 01-1.137-.966c-.906-.906-1.489-2.084-1.489-3.514V2h-3.492v13.563a2.738 2.738 0 11-2.738-2.737c.462 0 .892.115 1.271.312V9.751a6.173 6.173 0 00-1.271-.134 6.113 6.113 0 00-6.114 6.113 6.113 6.113 0 006.114 6.113 6.113 6.113 0 006.113-6.113V9.674c1.324.981 2.979 1.563 4.768 1.563V7.33a4.762 4.762 0 01-2.762-.768z" />
+        </svg>
+        TikTok
+      </button>
 
-      <button id="btnCloseModal" class="primary">Close</button>
+      <button type="button" id="btnCloseModal" class="primary">Close</button>
     </div>
   </div>
-
-  </main>
 
   <script src="/js/home.js"></script>
   <script>
     window.initialModeIndex = <%= user.selectedMode === 'confessions' ? 1 : (user.selectedMode === '3words' ? 2 : 0) %>;
   </script>
 </body>
+
 </html>

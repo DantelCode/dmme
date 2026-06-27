@@ -8,9 +8,9 @@ module.exports = {
       const user = req.user;
       const { username, email, notificationsEnabled } = req.body;
       if (username && username !== user.username) {
-        if (user.editsLeft <= 0) return res.render('dashboard/settings', { error: 'No edits left', user });
+        if (user.editsLeft <= 0) return res.render('dashboard/settings', { error: 'No edits left. Buy more edits to change your username.', user });
         const exists = await User.findOne({ username });
-        if (exists) return res.render('dashboard/settings', { error: 'Username taken', user });
+        if (exists) return res.render('dashboard/settings', { error: 'Username is already taken.', user });
         user.username = username;
         user.profileLink = `@${username}`;
         user.editsLeft = Math.max(0, user.editsLeft - 1);
@@ -21,10 +21,28 @@ module.exports = {
         user.profilePhoto = `/uploads/${req.file.filename}`;
       }
       await user.save();
-      res.redirect('/dashboard/settings');
+      res.redirect('/dashboard/settings?saved=1');
     } catch (err) {
       console.error(err);
       res.status(500).render('errors/500', { error: err });
+    }
+  },
+
+  changePassword: async (req, res) => {
+    try {
+      const { oldPassword, newPassword } = req.body;
+      const user = req.user;
+      if (!user.password) return res.status(400).json({ error: 'Password change is not available for Google accounts.' });
+      if (!oldPassword || !newPassword) return res.status(400).json({ error: 'Both password fields are required.' });
+      if (newPassword.length < 6) return res.status(400).json({ error: 'New password must be at least 6 characters.' });
+      const valid = await user.comparePassword(oldPassword);
+      if (!valid) return res.status(400).json({ error: 'Current password is incorrect.' });
+      user.password = newPassword;
+      await user.save();
+      res.json({ success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server error' });
     }
   },
 

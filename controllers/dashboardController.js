@@ -15,7 +15,14 @@ module.exports = {
     }
   },
 
-  settings: async (req, res) => {
-    res.render('dashboard/settings', { user: req.user });
+  profile: async (req, res) => {
+    let success = null;
+    if (req.query.payment === 'success') {
+      success = 'Payment successful! Your edits have been added.';
+    } else if (req.query.saved === '1') {
+      success = 'Profile updated successfully.';
+    }
+    const error = req.query.error ? decodeURIComponent(String(req.query.error).replace(/\+/g, ' ')) : null;
+    res.render('dashboard/profile', { user: req.user, success, error });
   }
 };

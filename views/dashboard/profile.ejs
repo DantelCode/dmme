@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>dmme • Profile</title>
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="/css/profile.css">
+</head>
+
+<body class="profile-page <%= (currentUser && currentUser.theme) || 'dark' %>">
+
+  <header class="profile-header">
+    <div class="profile-header-left">
+      <a href="/dashboard" class="back-btn" aria-label="Back to dashboard">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor" />
+        </svg>
+      </a>
+      <h3>Profile</h3>
+    </div>
+    <p class="profile-edits-badge">Edits: <span id="editsLeft"><%= user.editsLeft %></span></p>
+  </header>
+
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="profile-alert success"><%= success %></div>
+  <% } %>
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="profile-alert error"><%= error %></div>
+  <% } %>
+
+  <main class="profile-main">
+
+    <form id="profileForm" method="post" action="/dashboard/profile/update" enctype="multipart/form-data"
+      data-original-username="<%= user.username %>" data-edits-left="<%= user.editsLeft %>">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+      <div class="profile-photo-wrap">
+        <img id="photoPreview" src="<%= user.profilePhoto || '/images/placeholder.png' %>" alt="Profile photo">
+        <label class="profile-photo-upload" aria-label="Upload profile photo">
+          <input type="file" id="photoInput" name="profilePhoto" accept="image/jpeg,image/png,image/jpg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M12 15.2a3.2 3.2 0 100-6.4 3.2 3.2 0 000 6.4zM9 2L7.17 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2h-3.17L15 2H9zm3 15a5 5 0 110-10 5 5 0 010 10z"
+              fill="currentColor" />
+          </svg>
+        </label>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-field">
+          <div class="profile-field-info">
+            <span class="profile-field-label">Username</span>
+            <span class="profile-field-value" id="usernameValue"><%= user.username %></span>
+            <input class="hidden" id="usernameInput" name="username" value="<%= user.username %>" maxlength="30">
+          </div>
+          <button type="button" class="field-action" data-edit-field="username">Edit</button>
+        </div>
+
+        <div class="profile-field">
+          <div class="profile-field-info">
+            <span class="profile-field-label">Email</span>
+            <span class="profile-field-value" id="emailValue"><%= user.email %></span>
+            <input class="hidden" id="emailInput" name="email" type="email" value="<%= user.email %>">
+          </div>
+          <button type="button" class="field-action" data-edit-field="email">Edit</button>
+        </div>
+      </div>
+
+      <div class="profile-card" style="margin-top: 12px; padding: 0;">
+        <% if (user.password) { %>
+          <button type="button" class="profile-password-toggle" id="passwordToggle" aria-expanded="false">
+            Change password
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 6 L15 12 L9 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </button>
+          <div class="profile-password-panel" id="passwordPanel">
+            <div>
+              <label for="oldPassword">Old password</label>
+              <input type="password" id="oldPassword" autocomplete="current-password">
+            </div>
+            <div>
+              <label for="newPassword">New password</label>
+              <input type="password" id="newPassword" autocomplete="new-password">
+            </div>
+            <button type="button" class="secondary" id="btnSavePassword">Update password</button>
+          </div>
+        <% } else { %>
+          <p class="profile-field" style="color: var(--muted); font-size: 14px;">
+            Signed in with Google — password change is not available.
+          </p>
+        <% } %>
+      </div>
+
+      <div class="profile-actions" style="margin-top: 16px;">
+        <button type="submit" class="primary">Save changes</button>
+      </div>
+    </form>
+
+    <div class="profile-buy-card">
+      <h4>Buy more edits</h4>
+      <p class="profile-buy-desc">
+        Username changes use 1 edit each. Get 5 edits per batch — stack upto 10 batches as you need.
+      </p>
+
+      <div class="batch-selector">
+        <button type="button" class="batch-btn" id="batchMinus" aria-label="Decrease batches">−</button>
+        <span class="batch-count"><span id="batchCount">1</span></span>
+        <button type="button" class="batch-btn" id="batchPlus" aria-label="Increase batches">+</button>
+      </div>
+
+      <div class="batch-summary">
+        <div class="batch-price" id="batchTotalPrice">₦200 <small>₦300</small> / <span id="batchTotalEdits">5 edits</span> total</div>
+      </div>
+
+      <button type="button" class="buy-btn" id="btnBuyEdits">Buy edits</button>
+    </div>
+
+  </main>
+
+  <script src="/js/profile.js"></script>
+</body>
+
+</html>

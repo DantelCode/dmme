@@ -3,10 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const slides = document.getElementById('slides');
   const dots = Array.from(document.querySelectorAll('.dot'));
-  const profileToggle = document.getElementById('profileToggle');
   const themeToggle = document.getElementById('themeToggle');
-  const sidebar = document.getElementById('sidebar');
-  const sidebarClose = document.getElementById('sidebarClose');
   const btnClear = document.getElementById('btnClear');
   const btnRandom = document.getElementById('btnRandom');
   const btnCopyLink = document.getElementById('btnCopyLink');
@@ -16,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function go(i) {
     index = i;
     if (slides) {
-      slides.classList.remove('pos-0','pos-1','pos-2');
+      slides.classList.remove('pos-0', 'pos-1', 'pos-2', 'pos-3', 'pos-4', 'pos-5', 'pos-6', 'pos-7', 'pos-8');
       slides.classList.add(`pos-${i}`);
     }
     dots.forEach((d, idx) => d.classList.toggle('active', idx === i));
@@ -31,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const inp = document.getElementById('customInput');
         text = inp ? inp.value || inp.placeholder || '' : '';
       } else if (slide) {
-        mode = (i === 1) ? 'confessions' : '3words';
+        mode = (i === 1) ? 'confessions' : (i === 2) ? '3words' : (i === 3) ? 'neverhaveiever' : (i === 4) ? 'tbh' : (i === 5) ? 'shipme' : (i === 6) ? 'yourcrush' : (i === 7) ? 'cancelled' : 'dealbreaker';
         const tag = slide.querySelector('span');
         const p = slide.querySelector('p');
         tagClass = tag ? tag.className || '' : '';
@@ -43,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json', 'x-csrf-token': token },
         body: JSON.stringify({ mode, text, tagClass })
-      }).then(() => {}).catch(() => {});
+      }).then(() => { }).catch(() => { });
     } catch (e) {
       console.warn('Could not persist mode', e);
     }
@@ -90,9 +87,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   dots.forEach((d, idx) => d.addEventListener('click', () => go(idx)));
 
-  if (profileToggle) profileToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
+  // Popover is toggled natively via popovertarget on #profileToggle
   // theme toggle: flip body class and update SVG icon
-  function updateThemeIcon(){
+  function updateThemeIcon() {
     const moon = document.getElementById('icon-moon');
     const sun = document.getElementById('icon-sun');
     const isLight = document.body.classList.contains('light');
@@ -130,7 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   // ensure icon matches initial theme
   updateThemeIcon();
-  if (sidebarClose) sidebarClose.addEventListener('click', () => sidebar.classList.remove('active'));
 
   if (btnClear) btnClear.addEventListener('click', () => {
     const el = document.getElementById('customInput'); if (el) el.value = '';
@@ -149,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json', 'x-csrf-token': token },
         body: JSON.stringify({ mode: 'default', text, tagClass: '' })
-      }).catch(()=>{});
+      }).catch(() => { });
     };
     customInputEl.addEventListener('input', () => {
       if (saveTimer) clearTimeout(saveTimer);
@@ -159,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (btnRandom) btnRandom.addEventListener('click', () => {
-    const msgs = ["You are amazing","Keep going 🔥","People admire you","You're underrated"];
+    const msgs = ["You are amazing", "Keep going 🔥", "People admire you", "You're underrated"];
     const el = document.getElementById('customInput'); if (el) el.value = msgs[Math.floor(Math.random() * msgs.length)];
   });
 
@@ -173,6 +169,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnCloseModal) btnCloseModal.addEventListener('click', () => {
     const modal = document.getElementById('modal'); if (modal) modal.classList.remove('active');
+  });
+
+  function getProfileUrl() {
+    const linkEl = document.getElementById('link');
+    if (!linkEl) return window.location.origin;
+    const href = linkEl.getAttribute('href') || '';
+    if (href.startsWith('http')) return href;
+    return window.location.origin + (href.startsWith('/') ? href : '/' + href);
+  }
+
+  function getShareText() {
+    return `Send me anonymous messages! ${getProfileUrl()}`;
+  }
+
+  function copyShareLink() {
+    return navigator.clipboard.writeText(getShareText());
+  }
+
+  function isMobile() {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  }
+
+  function openAppOrWeb(deepLink, webUrl, copiedMessage) {
+    if (isMobile()) {
+      window.location.href = deepLink;
+      setTimeout(() => { window.location.href = webUrl; }, 1500);
+    } else {
+      window.open(webUrl, '_blank', 'noopener,noreferrer');
+      if (copiedMessage) alert(copiedMessage);
+    }
+  }
+
+  const shareHandlers = {
+    whatsapp: () => {
+      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(getShareText())}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    },
+    facebook: () => {
+      const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getProfileUrl())}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    },
+    instagram: () => {
+      copyShareLink().then(() => {
+        openAppOrWeb(
+          'instagram://story-camera',
+          'https://www.instagram.com/',
+          'Link copied! Paste it in your Instagram story.'
+        );
+      }).catch(() => alert('Could not copy link.'));
+    },
+    snapchat: () => {
+      copyShareLink().then(() => {
+        openAppOrWeb(
+          'snapchat://',
+          'https://www.snapchat.com/',
+          'Link copied! Paste it in your Snapchat story.'
+        );
+      }).catch(() => alert('Could not copy link.'));
+    },
+    tiktok: () => {
+      copyShareLink().then(() => {
+        openAppOrWeb(
+          'snssdk1233://upload',
+          'https://www.tiktok.com/upload',
+          'Link copied! Paste it in your TikTok story.'
+        );
+      }).catch(() => alert('Could not copy link.'));
+    }
+  };
+
+  document.querySelectorAll('[data-share]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const platform = btn.getAttribute('data-share');
+      if (shareHandlers[platform]) shareHandlers[platform]();
+    });
   });
 
   // Sidebar toggles: notifications and pause link
@@ -239,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Make images non-draggable to avoid ghost image while dragging
   document.querySelectorAll('img').forEach(img => {
-    try { img.setAttribute('draggable', 'false'); } catch (e) {}
+    try { img.setAttribute('draggable', 'false'); } catch (e) { }
     img.addEventListener('dragstart', (ev) => ev.preventDefault());
   });
 
